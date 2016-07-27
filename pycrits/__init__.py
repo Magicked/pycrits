@@ -37,12 +37,13 @@ class pycrits(object):
     # The password for zip files.
     _PASSWORD = 'infected'
 
-    def __init__(self, host, username, api_key):
+    def __init__(self, host, username, api_key, proxies=None, verify=True):
         self._base_url = host + self._API_VERSION
         self._host = host
         self._username = username
         self._api_key = api_key
-        self._verify = True
+        self._proxies = proxies
+        self._verify = verify
         self._retries = 0
 
     @property
@@ -98,7 +99,7 @@ class pycrits(object):
         params['username'] = self._username
         params['api_key'] = self._api_key
         url = self._base_url + url
-        resp = self.post_url(url, data=params, files=files, verify=self._verify, proxies=None)
+        resp = self.post_url(url, data=params, files=files, verify=self._verify, proxies=self._proxies)
         if resp.status_code != 200:
             raise pycritsFetchError("Response code: %s" % resp.status_code)
 
@@ -111,7 +112,7 @@ class pycrits(object):
 
     # Actually do the fetching.
     def _do_fetch(self, url, params={}):
-        resp = self.get_url(url, params=params, verify=self._verify, proxies=None)
+        resp = self.get_url(url, params=params, verify=self._verify, proxies=self._proxies)
         if resp.status_code != 200:
             raise pycritsFetchError("Response code: %s" % resp.status_code)
 
